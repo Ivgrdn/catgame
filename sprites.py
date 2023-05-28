@@ -132,16 +132,36 @@ class forest():
         doors.draw(self.screen)
         self.npc.update()
         self.cat.update()
+        self.object.update()
+
+
+        self.collision_list.add(self.cat)
+        self.object.rect.x = round(self.object.pos.x)
+        self.object.collisions('horizontal', self.collision_list)
+        self.object.rect.y = round(self.object.pos.y)
+        self.object.collisions('vertical', self.collision_list)
+        self.object.old_rect = self.object.rect.copy()
+
+
+        self.collision_list.remove(self.cat)
+        self.object.rect.x = round(self.object.pos.x)
+        self.object.collisions('horizontal', self.collision_list)
+        self.object.rect.y = round(self.object.pos.y)
+        self.object.collisions('vertical', self.collision_list)
+
+
+        # self.collision_list.remove(self.cat)
+        # self.collision_list.add(self.object)
         self.cat.rect.x = round(self.cat.pos.x)
         self.cat.collisions('horizontal', self.collision_list)
         self.cat.rect.y = round(self.cat.pos.y)
         self.cat.collisions('vertical', self.collision_list)
         self.cat.window_collision(1000, 600)
-        self.screen.blit(self.cat.image, (self.cat.pos.x, self.cat.pos.y))
-        self.collision_list.add(self.cat)
-        self.object.update('horizontal')
-        self.object.update('vertical')
+
+
+        pygame.draw.rect(self.screen,(123, 45, 79), self.object.rect)
         self.object.window_collision(1000, 600)
+        self.screen.blit(self.cat.image, (self.cat.pos.x, self.cat.pos.y))
         self.screen.blit(self.object.image, (self.object.pos.x, self.object.pos.y))
         return self.dimension
 
@@ -192,10 +212,8 @@ class Object(pygame.sprite.Sprite):
         self.collision_list = collision_list
         self.gravity_num = 1
         self.gravity = 10
-        
-        
         self.old_rect = self.rect.copy()
-    def update(self, direction):
+    def update(self):
         self.gravity_num+=0.5
         self.pos.y = self.pos.y +self.gravity
         # if self.y>=MIN_POSITION:
@@ -245,7 +263,7 @@ class Object(pygame.sprite.Sprite):
 
                 
     def window_collision(self, window_w, window_h):
-        if self.pos.y>=MIN_POSITION:
+        if self.rect.bottom>=MIN_POSITION:
             self.gravity = 0
             self.gravity_num = 0
             self.pos.y = MIN_POSITION
